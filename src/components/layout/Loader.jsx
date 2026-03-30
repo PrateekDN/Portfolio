@@ -1,91 +1,93 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useRef } from 'react';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 
-export default function Loader({ visible }) {
-  const [progress, setProgress] = useState(0);
+gsap.registerPlugin(useGSAP);
 
-  useEffect(() => {
-    if (!visible) return;
+export default function Loader({ onComplete }) {
+    const preloaderRef = useRef(null);
 
-    let startTimestamp = null;
-    const duration = 2000; // 2 seconds to reach 100%
+    useGSAP(
+        () => {
+            const tl = gsap.timeline({
+                onComplete: () => {
+                    if (onComplete) onComplete();
+                }
+            });
 
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const elapsedTime = timestamp - startTimestamp;
-      const nextProgress = Math.min((elapsedTime / duration) * 100, 100);
-      
-      setProgress(Math.floor(nextProgress));
+            // 1. INITIAL STATE (The Curtain Hide)
+            // No fading here! We push them 120% down so they are completely hidden 
+            // underneath our custom baseline mask, ready to slide up.
+            gsap.set('.name-text span', { 
+                yPercent: 120, 
+                rotation: -15 
+            });
 
-      if (elapsedTime < duration) {
-        window.requestAnimationFrame(step);
-      }
-    };
+            // 2. THE BUTTERY CURTAIN REVEAL + WAVE
+            // Because they start opaque but hidden behind the baseline, 
+            // animating yPercent creates the exact "sliding out of nowhere" effect.
+            tl.to('.name-text span', {
+                keyframes: [
+                    // Shoots up out of the invisible mask, tilts, and overshoots the baseline
+                    { yPercent: -15, rotation: 3, duration: 0.6, ease: "power3.out" },
+                    // Glides perfectly down to rest on the baseline
+                    { yPercent: 0, rotation: 0, duration: 0.5, ease: "power2.inOut" }
+                ],
+                stagger: 0.05, // Tight stagger for a continuous fluid wave
+                force3D: true, // Hardware acceleration for buttery smoothness on all hz
+            });
 
-    window.requestAnimationFrame(step);
-  }, [visible]);
+            // 3. THE 10 COLUMNS DROP
+            tl.to('.preloader-item', {
+                yPercent: 100,
+                duration: 0.7,
+                stagger: 0.05, // EXACTLY matches the text fade stagger below
+                ease: "power4.inOut",
+                force3D: true,
+            }, "+=0.15"); // Waits a split second for the wave to finish settling
 
-  return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div 
-          key="loader"
-          initial={{ y: 0 }}
-          // The entire loader slides up smoothly and out of the way
-          exit={{ y: "-100%", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 } }}
-          className="fixed inset-0 z-[100] bg-[#03040b] flex flex-col items-center justify-center overflow-hidden"
-        >
-          {/* Centered Name Reveal */}
-          <div className="overflow-hidden">
-            <motion.div 
-              initial={{ y: "100%" }}
-              animate={{ y: "0%" }}
-              transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
-              className="font-display text-4xl md:text-6xl font-bold tracking-tighter text-white uppercase"
-            >
-              PRATEEK DEBNATH
-            </motion.div>
-          </div>
+            // 4. THE SEAMLESS WIPE (Fading exactly as the strip touches the letter)
+            tl.to('.name-text span', {
+                autoAlpha: 0,
+                yPercent: 15, // Pushes slightly down into the mask as they fade
+                duration: 0.3,
+                stagger: 0.05, // Matches the columns perfectly for the sweep effect
+                force3D: true,
+            }, '<0.25'); // Triggers 0.25s after the columns start falling (right as they hit the text)
 
-          {/* Subtitle / Role Reveal */}
-          <div className="overflow-hidden mt-4">
-            <motion.div 
-              initial={{ y: "-100%", opacity: 0 }}
-              animate={{ y: "0%", opacity: 1 }}
-              transition={{ duration: 1, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
-              className="text-xs md:text-sm font-medium tracking-[0.2em] text-slate-400 uppercase font-sans"
-            >
-              Frontend Developer
-            </motion.div>
-          </div>
-          
-          {/* Bottom Right Percentage Counter */}
-          <div className="absolute bottom-8 right-8 md:bottom-12 md:right-12 flex items-end">
-             <motion.span 
-               initial={{ opacity: 0, y: 20 }}
-               animate={{ opacity: 1, y: 0 }}
-               transition={{ duration: 0.5, delay: 0.5 }}
-               className="font-display text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-t from-white/20 to-white/5"
-             >
-               {progress}
-             </motion.span>
-             <motion.span 
-               initial={{ opacity: 0 }}
-               animate={{ opacity: 1 }}
-               transition={{ duration: 0.5, delay: 0.7 }}
-               className="font-display text-xl md:text-3xl font-bold text-white/20 mb-2 ml-1"
-             >
-               %
-             </motion.span>
-          </div>
+            // 5. CLEANUP
+            tl.to(preloaderRef.current, {
+                autoAlpha: 0,
+                duration: 0.3
+            });
+        },
+        { scope: preloaderRef }
+    );
 
-          {/* Loading Progress Bar at the very bottom */}
-          <div 
-            className="absolute bottom-0 left-0 h-1 bg-purple-500 transition-all duration-75 ease-out" 
-            style={{ width: `${progress}%` }}
-          ></div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+    const name = "PRATEEK".split("");
+
+    return (
+        <div className="fixed inset-0 z-[100] flex bg-[#03040b]" ref={preloaderRef}>
+            {/* Generate the 10 curtain columns */}
+            {[...Array(10)].map((_, i) => (
+                <div key={i} className="preloader-item h-full w-[10%] bg-[#03040b]"></div>
+            ))}
+
+            {/* THE MAGIC MASK: [clip-path:inset(-100%_-50%_0_-50%)]
+                - Top is -100% (allows the bounce to overflow upwards without clipping)
+                - Left/Right is -50% (allows tilt without clipping)
+                - Bottom is 0 (creates the SHARP invisible line for the curtain reveal)
+            */}
+            <p className="name-text flex gap-[4px] text-[20vw] lg:text-[200px] font-anton text-white text-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 leading-none z-10 [clip-path:inset(-100%_-50%_0_-50%)]">
+                {name.map((char, i) => (
+                    <span 
+                        key={i} 
+                        className="inline-block will-change-transform" 
+                    >
+                        {char}
+                    </span>
+                ))}
+            </p>
+        </div>
+    );
 }
