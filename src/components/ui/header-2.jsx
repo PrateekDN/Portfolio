@@ -1,113 +1,134 @@
 'use client';
-import React from 'react';
-import { Button } from '@/components/ui/button';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import { MenuToggleIcon } from '@/components/ui/menu-toggle-icon';
-import { useScroll } from '@/components/ui/use-scroll';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function Header() {
-  const [open, setOpen] = React.useState(false);
-  // Lowered the scroll threshold slightly so it pops out a bit sooner when scrolling
-  const scrolled = useScroll(20);
+  const [open, setOpen] = useState(false);
 
-  const links = [
-    { label: 'About', href: '#about' },
-    { label: 'Skills', href: '#skills' },
-    { label: 'Projects', href: '#projects' },
-    { label: 'Experience', href: '#experience' },
+  const navLinks = [
+    { label: 'HOME', href: '#home' },
+    { label: 'ABOUT', href: '#about' },
+    { label: 'SERVICES', href: '#services' },
+    { label: 'WORK', href: '#projects' },
+    { label: 'CONTACT', href: '#contact' },
   ];
 
-  React.useEffect(() => {
-    if (open) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
   }, [open]);
 
   return (
-    <header
-      className={cn(
-        'fixed top-0 left-0 right-0 z-50 mx-auto w-full transition-all duration-500 ease-out',
-        {
-          // Scrolled State: Wider (1100px), visible background, borders, and blur
-          'md:top-5 md:max-w-[1100px] md:rounded-2xl border border-white/10 bg-[#03040b]/85 supports-[backdrop-filter]:bg-[#03040b]/60 backdrop-blur-lg shadow-2xl': 
-            scrolled && !open,
-          // Flat Top State: Completely invisible background and borders
-          'bg-transparent border-transparent md:max-w-full rounded-none': 
-            !scrolled && !open,
-          // Mobile Menu Open State
-          'bg-[#03040b]': open,
-        },
-      )}
-    >
-      <nav
-        className={cn(
-          'flex w-full items-center justify-between px-6 md:px-12 transition-all duration-500 ease-out',
-          // Sleeker height: h-14 (56px) when scrolled, h-24 (96px) when resting at the top
-          scrolled ? 'h-14' : 'h-24'
-        )}
-      >
-        {/* Logo / Brand */}
-        <a href="#home" className="flex items-center gap-2 group text-white">
-          <span className="w-2 h-2 bg-purple-500 rounded-full group-hover:shadow-[0_0_10px_#8b5cf6] transition-all"></span>
-          <span className="font-display text-xl font-bold tracking-tight text-white">PD</span>
-        </a>
-        
-        {/* Desktop Navigation */}
-        <div className="hidden items-center md:flex">
-          <div className="flex items-center gap-8 mr-8">
-            {links.map((link, i) => (
-              <a 
-                key={i} 
-                className="text-sm font-medium text-slate-300 hover:text-white transition-colors" 
-                href={link.href}
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
-          <a href="https://www.linkedin.com/in/prateek-debnath-744453330" target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" className="rounded-xl border-white/10 hover:bg-white/10 h-9 px-5">Let's Talk</Button>
-          </a>
+    <>
+      {/* TOP BAR - Higher Z-Index to stay above the menu */}
+      <header className="fixed top-0 left-0 w-full z-[80] px-8 py-8 md:px-12 flex justify-between items-start pointer-events-none">
+        <div className="pointer-events-auto">
+          <span className="text-white font-black tracking-widest text-sm md:text-base font-inter">
+            PRATEEK DN.
+          </span>
         </div>
-        
-        {/* Mobile Hamburger Menu */}
-        <Button size="icon" variant="ghost" onClick={() => setOpen(!open)} className="md:hidden text-white hover:bg-white/10">
-          <MenuToggleIcon open={open} className="size-6" duration={300} />
-        </Button>
-      </nav>
 
-      {/* Mobile Fullscreen Menu Dropdown */}
-      <div
-        className={cn(
-          'fixed top-[100%] right-0 bottom-0 left-0 z-50 flex flex-col h-[100vh] overflow-hidden bg-[#03040b] border-t border-white/5 md:hidden transition-all duration-500 ease-in-out',
-          open ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 -translate-y-4 pointer-events-none'
-        )}
-      >
-        <div className="flex h-full w-full flex-col gap-y-6 p-8">
-          <div className="grid gap-y-6 mt-4">
-            {links.map((link) => (
-              <a
-                key={link.label}
-                className="text-2xl font-medium text-slate-300 hover:text-white transition-colors"
-                href={link.href}
-                onClick={() => setOpen(false)}
+        {/* TOGGLE BUTTON: Transforms into 'X' when open */}
+        <button 
+          onClick={() => setOpen(!open)}
+          className="group pointer-events-auto flex flex-col gap-2 items-end justify-center p-2 outline-none"
+          aria-label="Toggle Menu"
+        >
+          {/* Top Line */}
+          <div className={cn(
+            "h-[2px] bg-white transition-all duration-500 ease-[0.76, 0, 0.24, 1]", 
+            open ? "w-8 rotate-45 translate-y-[5px]" : "w-8"
+          )} />
+          {/* Middle Line */}
+          <div className={cn(
+            "h-[2px] bg-white transition-all duration-300", 
+            open ? "w-0 opacity-0" : "w-5"
+          )} />
+          {/* Bottom Line */}
+          <div className={cn(
+            "h-[2px] bg-white transition-all duration-500 ease-[0.76, 0, 0.24, 1]", 
+            open ? "w-8 -rotate-45 -translate-y-[5px]" : "w-8"
+          )} />
+        </button>
+      </header>
+
+      {/* FULLSCREEN MENU OVERLAY */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+            className="fixed inset-0 z-[70] bg-[#0f0b0a] flex flex-col md:flex-row"
+          >
+            {/* Left Decorative Side */}
+            <div className="hidden md:flex flex-1 items-center justify-center border-r border-white/5 relative overflow-hidden">
+               <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent"></div>
+               <motion.h2 
+                 initial={{ y: 100, opacity: 0 }}
+                 animate={{ y: 0, opacity: 0.1 }}
+                 transition={{ delay: 0.4, duration: 1 }}
+                 className="text-white text-[10vw] font-black rotate-90 select-none"
+               >
+                 MENU
+               </motion.h2>
+            </div>
+
+            {/* Right Content Side */}
+            <div className="flex-1 flex flex-col justify-between p-8 md:p-24 pt-40">
+              
+              <nav className="flex flex-col gap-4">
+                {navLinks.map((link, i) => (
+                  <div key={link.label} className="overflow-hidden">
+                    <motion.a
+                      href={link.href}
+                      onClick={() => setOpen(false)}
+                      initial={{ y: "100%" }}
+                      animate={{ y: 0 }}
+                      exit={{ y: "100%" }}
+                      transition={{ 
+                        delay: 0.2 + (i * 0.05), 
+                        duration: 0.7, 
+                        ease: [0.76, 0, 0.24, 1] 
+                      }}
+                      className="font-geist font-bold text-[48px] md:text-[64px] leading-none text-white hover:italic transition-all w-fit block hover:text-white/60"
+                    >
+                      {link.label}
+                    </motion.a>
+                  </div>
+                ))}
+              </nav>
+
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="flex flex-col md:flex-row gap-12 md:gap-24 border-t border-white/10 pt-12"
               >
-                {link.label}
-              </a>
-            ))}
-          </div>
-          <div className="flex flex-col gap-4 mt-auto mb-32">
-            <a href="https://www.linkedin.com/in/prateek-debnath-744453330" target="_blank" rel="noopener noreferrer" className="w-full">
-              <Button className="w-full h-14 text-lg rounded-xl">Let's Talk</Button>
-            </a>
-          </div>
-        </div>
-      </div>
-    </header>
+                <div>
+                  <p className="font-geist font-light text-[12px] text-white/40 mb-2 uppercase tracking-[0.3em]">E-mail</p>
+                  <a href="mailto:dev.syednoor@gmail.com" className="font-geist font-light text-[14px] text-white hover:text-white/60 transition-colors">
+                    prateekdn77@gmail.com
+                  </a>
+                </div>
+
+                <div>
+                  <p className="font-geist font-light text-[12px] text-white/40 mb-2 uppercase tracking-[0.3em]">Social Media</p>
+                  <div className="flex gap-6">
+                    {['GITHUB', 'LINKEDIN'].map((social) => (
+                      <a key={social} href="#" className="font-geist font-light text-[14px] text-white hover:underline underline-offset-8">
+                        {social}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

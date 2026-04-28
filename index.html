@@ -1,16 +1,37 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" >
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prateek Debnath | Frontend Developer & ML Enthusiast</title>
+  <title>Prateek Debnath | Software Engineer</title>
   
   <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600&family=Anton&display=swap" rel="stylesheet">
-<body class="selection:bg-indigo-500/30 selection:text-indigo-200">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;900&family=Space+Grotesk:wght@300;400;500;600&family=Anton&family=Geist:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+   /* 1. Target the root HTML, Body, and ALL elements for WebKit (Chrome/Safari/Edge) */
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+
+    /* 2. Target the root HTML, Body, and ALL elements for Firefox/IE */
+    html, 
+    body, 
+    * {
+      -ms-overflow-style: none !important;
+      scrollbar-width: none !important;
+    }
+  </style>
+</head>
+
+<body class="no-scrollbar bg-[#0f0b0a] text-white selection:bg-indigo-500/30 selection:text-indigo-200 antialiased overflow-x-hidden">
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

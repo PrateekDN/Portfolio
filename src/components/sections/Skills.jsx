@@ -5,9 +5,9 @@ export default function Skills() {
     {
       id: "frontend",
       bgImage: "/assets/frontend_bg.avif",
-      gradient: "from-blue-900/40",
+      gradient: "from-black/60", // Neutralized
       icon: "solar:monitor-smartphone-linear",
-      iconColor: "text-blue-400",
+      iconColor: "text-white",
       titleVertical: "Frontend",
       titleHorizontal: "Frontend Dev",
       tags: ["React.js", "Next.js", "Tailwind CSS", "Framer Motion"]
@@ -15,9 +15,9 @@ export default function Skills() {
     {
       id: "languages",
       bgImage: "/assets/languages_bg.avif",
-      gradient: "from-purple-900/40",
+      gradient: "from-black/60", // Neutralized
       icon: "solar:code-square-linear",
-      iconColor: "text-purple-400",
+      iconColor: "text-white",
       titleVertical: "Languages",
       titleHorizontal: "Programming",
       tags: ["C / C++", "Python", "JavaScript", "TypeScript"]
@@ -25,9 +25,9 @@ export default function Skills() {
     {
       id: "tools",
       bgImage: "/assets/tools_bg.avif",
-      gradient: "from-emerald-900/40",
+      gradient: "from-black/60", // Neutralized
       icon: "solar:widget-linear",
-      iconColor: "text-emerald-400",
+      iconColor: "text-white",
       titleVertical: "Tools",
       titleHorizontal: "Dev Tools",
       tags: ["Git", "GitHub", "VS Code", "Figma"]
@@ -35,9 +35,9 @@ export default function Skills() {
     {
       id: "ml-backend",
       bgImage: "/assets/ml_bg2.jpg",
-      gradient: "from-rose-900/40",
+      gradient: "from-black/60", // Neutralized
       icon: "solar:cpu-bolt-linear",
-      iconColor: "text-rose-400",
+      iconColor: "text-white",
       titleVertical: "ML & Backend",
       titleHorizontal: "Other Skills",
       description: "Exploring the intersection of web and intelligent systems.",
@@ -46,15 +46,17 @@ export default function Skills() {
   ];
 
   return (
-    <section id="skills" className="py-24 border-y border-white/5 relative bg-white/[0.01]">
+    <section id="skills" className="py-32 bg-[#0f0b0a] relative border-t border-white/5">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="flex items-center gap-3 mb-12 reveal">
-          <iconify-icon icon="solar:layers-linear" width="24" className="text-purple-500"></iconify-icon>
-          <h2 className="text-sm font-medium tracking-widest text-slate-400 uppercase font-display">
+        <div className="flex items-center gap-4 mb-16 reveal">
+          <iconify-icon icon="solar:layers-linear" width="28" className="text-[#eab308]"></iconify-icon>
+          <h2 className="text-lg font-black uppercase tracking-[0.2em] text-white">
             Technical Arsenal
           </h2>
         </div>
-        <div className="flex flex-col md:flex-row h-[500px] gap-2 reveal reveal-delay-1">
+        
+        {/* Accordion height increased for more drama */}
+        <div className="flex flex-col md:flex-row h-[600px] gap-3 reveal reveal-delay-1">
           {skillsData.map((skill) => (
             <SkillAccordion key={skill.id} data={skill} />
           ))}

@@ -7,6 +7,7 @@ export default {
     extend: {
       fontFamily: {
         anton: ['Anton', 'sans-serif'],
+        geist: ['Geist', 'sans-serif'],
         display: ['Space Grotesk', 'sans-serif'],
       }
     },
